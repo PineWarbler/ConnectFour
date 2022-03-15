@@ -8,15 +8,7 @@ Created on Mon Jan 24 15:21:30 2022
 # copied from https://github.com/hponemyintk/ConnectFour/blob/master/connect4_wAI.py
 # this one actually seems to work properly!
 
-# future modifications to make this program work for our project:
-# remove all pygame graphics
-# pass in board array from ArUco code readings, execute minimax, drop piece
-
-# remove print statements
-# make difficulty level (SEARCH_DEPTH) a user input (button, slider?)
-
-# make background of codes light red and yellow? need to test
-# is rpi online? can't ssh to it
+# modified by P. Reynolds to comment out all PyGame functionality and references
 
 # example board that this program produces:
 # [[0. 0. 0. 1. 0. 0. 0.]
@@ -26,7 +18,7 @@ Created on Mon Jan 24 15:21:30 2022
  # [0. 0. 2. 2. 2. 0. 0.]
  # [0. 1. 2. 1. 1. 0. 0.]] 
  
- # maybe is flipped vertically?
+ # note that input board is flipped vertically!
  
 
 import numpy as np
@@ -34,19 +26,12 @@ import random
 import sys
 import math
 
-board = np.array([[0, 0, 0, 1, 0, 0, 0,],
-                  [0, 0, 0, 1, 0, 0, 0,],
-                  [0, 0, 0, 2, 0, 0, 0,],
-                  [0, 0, 2, 1, 0, 0, 0,],
-                  [0, 0, 2, 2, 0, 0, 0,],
-                  [0, 1, 2, 1, 1, 0, 0,]])
-
+# create example board
 board = np.zeros((6, 7))
 board[5][3:5] = 2
 board[4][3]=2
 board[3][3]=2
 board = np.flip(board, 0) # rotate 180 degrees for minimax algo
-# board = np.zeros((6,7))
  
 
 SEARCH_DEPTH = 6 # added by P. Reynolds

@@ -5,16 +5,16 @@ Created on Thu Oct 21 16:33:01 2021
 @author: REYNOLDSPG21
 """
 
+# this code analyzes an image containing four 7x7 ArUco markers on the vertices of a connect four board and having pieces with 4x4 ArUco markers.
+# Then produces a matrix containing the piece board locations and team info for each piece
+
+
 # To Do:
 # make this a function like `parse_board_image(...)`
 
-
-import cv2
-# import datetime
 import numpy as np
 import time
 from miscFunctions import pprintTime
-# import matplotlib.pyplot as plt
 
 # divide marker codes into groups for human and ai (we've chosen evens&zero vs odds)
 HUMAN_CODES = "odds"
@@ -78,20 +78,16 @@ corners = np.array(corners)
 # group x coords and y coords together
 xvals = np.ones((corners.shape[0], 4))
 yvals = np.ones((corners.shape[0], 4))
-# perCodeavgXvals = np.ones((corners.shape[0], 1))
-# perCodeavgYvals = np.ones((corners.shape[0], 1))
 
+# sort indices of found codes into x and y arrays
 for i in range(0, len(corners)):
     print(i)
-    # perCodeavgXvals[i] = np.average(corners[i])
     for j in range(0, len(corners[0][0])):
         xvals[i,j] = int(corners[i][0][j][0])
         yvals[i,j] = int(corners[i][0][j][1])
-        
-    # perCodeavgXvals[i] = np.average(xvals[i][:])
-    # perCodeavgYvals[i] = np.average(yvals[i][:])
 
 
+# determine which of each 7x7 code's vertices is closest to the center of the connect four board (so we can crop the image later)
 for i in range(0, len(corners)):
     thisCodeavgX = np.average(xvals[i])
     thisCodeavgY = np.average(yvals[i])
@@ -100,32 +96,17 @@ for i in range(0, len(corners)):
         
         if thisCodeavgY<=np.average(yvals):
             topRightPOI = corners[i][0]
-            # print("found top right POI:", topRightPOI, "at i=", i, 'thisCodeavgX=', thisCodeavgX, 'thisCodeavgY', thisCodeavgY)
         if thisCodeavgY>np.average(yvals):
             # then bottom right code
             bottomRightPOI = corners[i][0]
-            # print("found bottom right POI:", bottomRightPOI, "at i=", i, 'thisCodeavgX=', thisCodeavgX, 'thisCodeavgY', thisCodeavgY)
-            # bottomRightPOI = [sorted(corners[i][0], key=lambda tup: tup[0])[0][0], sorted(corners[i][0], key=lambda tup: tup[1])[1][-1]]
+		
     if thisCodeavgX<=np.average(xvals):
-        # print('hurrah')
         if thisCodeavgY<=np.average(yvals):
             # then top left code
-            # topLeftPOI = [sorted(corners[i][0], key=lambda tup: tup[0])[-1][0], sorted(corners[i][0], key=lambda tup: tup[1])[]]
             topLeftPOI = corners[i][0]
-            # print("found top left POI:", topLeftPOI, "at i=", i)
         if thisCodeavgY>np.average(yvals):
             # then bottom left code
-            # bottomLeftPOI = [sorted(corners[i][0], key=lambda tup: tup[0])[-1][-1], sorted(corners[i][0], key=lambda tup: tup[1])[-1][0]]
             bottomLeftPOI = corners[i][0]
-
-
-
-# crop board edge markers out of image
-# cropped = image[topYCoordBiggest:bottomYCoordSmallest, leftXCoordBiggest:rightXCoordSmallest]
-
-# plt.imshow(cropped)
-# plt.imshow(image)
-
 
 
 
@@ -151,9 +132,6 @@ unwarped_image = cv2.warpPerspective(image, h, (width, height))
 pprintTime(start5, time.time())
 print("^^ time to just unwarp image")
 
-# from skimage import io
-# io.imsave('C:/Users/REYNOLDSPG21/OneDrive - Grove City College/Documents/ArUco Codes/test board unwarped.png', unwarped_image)
-
 
 end = time.time()
 pprintTime(start, end)
@@ -175,18 +153,7 @@ for k in range(0, len(tokensCorners)):
     x = [p[0] for p in tokensCorners[k][0]]
     y = [p[1] for p in tokensCorners[k][0]]
     tokenMidPts[k] = (np.mean(x), np.mean(y))
-    
-# def getPercentBins(numDim):
-#     # numDim is the maximum number of tokens placeable on the desired dimension of board
-#     built=[0]
-#     for i in range(1,numDim+1):
-#         built.append(1/(numDim))
-#     # built.append(1/(2*(numDim-1)))
-#     built=np.cumsum(built)
-#     return built
-# print(getPercentBins(7))
-
-
+   
 xDim = 7
 xBins = np.arange(0, 1, 1/(xDim))
 xBins = np.append(xBins, 1)
@@ -196,10 +163,7 @@ yBins = np.arange(0, 1, 1/(yDim))
 yBins = np.append(yBins, 1)
 
 board = np.empty((yDim, xDim))
-# for i in range(0, len(tokensCorners)):
-#     # if x value is between the x bins...
-#     if ((tokenMidPts[i][0]/np.shape(unwarped_image[1]) >= xBins[i]) and (tokenMidPts[i][0]/np.shape(unwarped_image[1]) < percentBins[i+1]):
-#                 start[j]+=1
+
 
 start = time.time()
 # now commence binning based on normalized tokenMidPts          
@@ -236,4 +200,3 @@ print("^^ time to locate and record positions of piece codes.\n")
 
 # plt.imshow(board)
 cv2.imshow('asdf2', board)
-

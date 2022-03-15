@@ -1,3 +1,5 @@
+# These functions written by P. Reynolds 3/2022
+# note that Python 3.9.x may be required for native socket support
 
 def listen_for_query(addr, port, maxSize=1024, backlog=1):
     '''

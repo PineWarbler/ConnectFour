@@ -5,21 +5,14 @@ Created on Mon Mar 21 21:52:57 2022
 @author: REYNOLDSPG21
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Mar 21 21:35:38 2022
+# modified version from: https://github.com/KeithGalli/Connect4-Python/blob/master/connect4_with_ai.py
+# all pygame functionality has been commented out
 
-@author: REYNOLDSPG21
-"""
-
-# copied from: https://github.com/KeithGalli/Connect4-Python/blob/master/connect4_with_ai.py
-
-# my estimates show that GCC laptops are 4x faster in computing the minimax than the RPi
-# average compute time on GCC laptop per minimax step is 0.47 ± 0.268s, which equates to 1.88 ± 1.07s for the RPi
+# average minimax step time on RPi is:  5.428 ± 1.152s, a significant improvement over the 25s step time with the previous implementation of minimax
 
 import numpy as np
 import random
-import pygame
+# import pygame
 import sys
 import math
 

@@ -5,9 +5,18 @@ Created on Tue Mar 22 17:46:09 2022
 @author: REYNOLDSPG21
 """
 
-def getPixelBins(imagePixelDim, numTokensOnAxis, holeDiameter, middleGap, externalGap, totalBoardRealDim):
+# all dimensions in mm (just make sure that the units for all measurements are the same)
+holeDiameter = 25
+
+middleGapsX = 9.7
+sideGapsX = 13.5
+
+topBottomGapsY = 9
+middleGapsY = 6.8
+
+def getPixelBins(imagePixelDim, numTokensOnAxis, holeDiameter, middleGap, externalGap):
     '''
-    returns pixel values of token piece centers in an image of connect four board
+    returns integer pixel values of token piece centers in an image of connect four board
 
     Parameters
     ----------
@@ -28,11 +37,26 @@ def getPixelBins(imagePixelDim, numTokensOnAxis, holeDiameter, middleGap, extern
     Returns
     -------
     numpy array
-        containing pixel values along one dimension for centers of tokens
+        numpy array containing integer pixel indices
+
+
+    ---------- NOTE! -------
+    -- Recommended arguments: -- 
+    holeDiameter = 25
+
+    middleGapsX = 9.7
+    sideGapsX = 13.5
+
+    topBottomGapsY = 9
+    middleGapsY = 6.8
 
     '''
-    bins=np.ones(numTokensOnAxis) # make array to fill
-    bins[[0, numTokensOnAxis-1]] = externalGap + (holeDiameter/2) # first and last tokens
+    import numpy as np
+
+    totalBoardRealDim = (numTokensOnAxis*holeDiameter) + ((numTokensOnAxis-1)*middleGapsX) + (2*sideGapsX)
+
+    bins = np.ones(numTokensOnAxis) # make array to fill
+    bins[0] = externalGap + (holeDiameter/2) # first token
         
-    bins[1:(numTokensOnAxis-1)] = (holeDiameter+middleGap) # fill in non-edge pieces
-    return (np.cumsum(bins)/totalBoardRealDim) * imagePixelDim # normalize to total board dimension and convert to pixel values
+    bins[1:numTokensOnAxis] = (holeDiameter+middleGap) # fill in first edge piece
+    return ((np.cumsum(bins)/totalBoardRealDim) * imagePixelDim).astype(int) # normalize to total board dimension and convert to integer pixel values

@@ -212,7 +212,7 @@ Good for making sure there were no issues when translating the picture to a boar
 Returns true if the state is valid, false otherwise.
 Only call if the player or AI has already placed a piece.
 """
-def board_is_valid(board, first_player, current_player):
+def board_is_valid(board, first_player, current_player, turns):
 	aiPieces = 0
 	playerPieces = 0
 	bad_if_air = False
@@ -234,6 +234,10 @@ def board_is_valid(board, first_player, current_player):
 				aiPieces += 1
 			else:
 				bad_if_air = True
+
+	# If the total number of pieces is wrong, return false.
+	if (turns != (aiPieces + playerPieces)):
+		return False
 	
 	# Ensure that the number of each piece is valid.
 	if (first_player == current_player):
@@ -259,6 +263,7 @@ def play_game(depth):
 
 	#Set up the game.
 	turn = random.randint(PLAYER, AI)
+	totalTurns = 0
 	first_player = turn
 	board = create_board()
 
@@ -277,8 +282,10 @@ def play_game(depth):
 			else:
 				print("Invalid column")
 
+			totalTurns += 1
+
 			# Make sure the board is valid.
-			if (board_is_valid(board, first_player, turn) == False):
+			if (board_is_valid(board, first_player, turn, totalTurns) == False):
 				invalid = True
 			else:
 				invalid = False
@@ -328,6 +335,8 @@ def play_game(depth):
 						row = get_next_open_row(board, col)
 						drop_piece(board, row, col, AI_PIECE)
 						break
+			
+			totalTurns += 1
 
 			# Check if the AI has won.
 			if (winning_move(board, AI_PIECE)):

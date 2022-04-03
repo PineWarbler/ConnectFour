@@ -7,9 +7,9 @@
 
 ## ToDo
 - [ ] Get H-bridge stepper motor circuit running with Python code
-- [ ] finalize and 3d print column-style piece dispenser
+- [x] finalize and 3d print column-style piece dispenser
 - [ ] 3d print and assemble gantry
-- [ ] Develop color thresholding algorithm instead of using ArUco codes for locating pieces within the board (?)
+- [x] Develop color thresholding algorithm instead of using ArUco codes for locating pieces within the board (?)
     - use HSV colorspace(?)
 - [x] Get RPi camera running
 - [x] Solve problem of RPi slow minimax compute time (see [BTCommFunctions](/Python/BTCommFunctions.py) that uses wireless Python bluetooth sockets to communicate with a more powerful laptop in about 0.2 seconds per query)

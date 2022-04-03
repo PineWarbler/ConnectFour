@@ -63,7 +63,7 @@ ARUCO_DICT = {
 # arucoDict = cv2.aruco.Dictionary_get(ARUCO_DICT["DICT_4X4_50"])
 boardLinersArucoDict = cv2.aruco.Dictionary_get(ARUCO_DICT["DICT_7X7_100"])
 
-arucoParams = cv2.aruco.DetectorParameters_create()
+arucoParams = cv2.aruco.DetectorParameters_create() # if this is too slow, try using passing `useAruco3Detection=True` as an argument (https://docs.opencv.org/4.x/d1/dcd/structcv_1_1aruco_1_1DetectorParameters.html#a5ba4261aa9c097f48e4e64426b16a7e1)
 
 (corners, ids, rejected) = cv2.aruco.detectMarkers(image, boardLinersArucoDict, parameters=arucoParams)
 
@@ -139,10 +139,10 @@ print("^^ time to locate and process the four boundary codes.\n")
 
 cv2.imshow('asdf', cv2.resize(unwarped_image, (960, 540)))
 
-
+''' Don't need the below code if we're not using individual ArUco codes on each token...
 tokensArucoDict = cv2.aruco.Dictionary_get(ARUCO_DICT["DICT_4X4_100"])
 
-arucoParams = cv2.aruco.DetectorParameters_create()
+arucoParams = cv2.aruco.DetectorParameters_create() 
 
 (tokensCorners, ids2, rejected2) = cv2.aruco.detectMarkers(unwarped_image, tokensArucoDict, parameters=arucoParams)
 
@@ -200,3 +200,4 @@ print("^^ time to locate and record positions of piece codes.\n")
 
 # plt.imshow(board)
 cv2.imshow('asdf2', board)
+'''

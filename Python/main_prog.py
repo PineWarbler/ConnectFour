@@ -290,10 +290,13 @@ def play_game(depth):
 			totalTurns += 1
 
 			# Make sure the board is valid.
-			if (board_is_valid(board, first_player, turn, totalTurns) == False):
+			'''if (board_is_valid(board, first_player, turn, totalTurns) == False):
 				invalid = True
 			else:
-				invalid = False
+				invalid = False'''
+				
+			invalid = not board_is_valid(board, first_player, turn, totalTurns) # simplified by P. Reynolds from the above if-else implementation
+			
 			while (detect_errors and invalid):
 				print_board(board)
 				print("Board invalid. Select an option:\n 1. Read board state again\n 2. Ignore error and try to keep playing\n 3. End game")
@@ -309,6 +312,7 @@ def play_game(depth):
 					print("Will attempt to keep playing. Error checking disabled.")
 					detect_errors = False
 				else:
+					print("Game Terminated.")
 					return
 
 			# Check if the player has won.

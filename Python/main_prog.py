@@ -205,6 +205,11 @@ def pick_best_move(board, piece):
 
 	return best_col
 
+# This one-liner function checks for floating pieces (author: Peter Reynolds)
+# do whole board at once
+def get_board_validity(board):
+    return np.array_equal(np.flip(np.cumprod(np.flip(board, 0), axis=0), 0), board) # explanation: in this column-wise cumprod, all elements following a zero (empty space) are turned into zeros, so all spaces above an empty space must also be empty.  If the rest of the observed column does not exhibit this behavior, board is invalid
+
 """
 AUTHOR: Connor Felton
 This function ensures that the board's current state is valid.

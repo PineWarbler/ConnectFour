@@ -16,13 +16,11 @@ import random
 import sys
 import math
 
+# the two files below are in the GitHub repo
+from interpretBoard import interpretBoard
+from takePictureOfBoard import takePictureOfBoard
+
 # note that input board is flipped vertically 180 degrees!!! to revert the flip, use np.flip(board, 0)
-
-
-# BLUE = (0,0,255)
-# BLACK = (0,0,0)
-# RED = (255,0,0)
-# YELLOW = (255,255,0)
 
 ROW_COUNT = 6
 COLUMN_COUNT = 7
@@ -208,7 +206,7 @@ def pick_best_move(board, piece):
 # This one-liner function checks for floating pieces (author: Peter Reynolds)
 # do whole board at once
 def get_board_validity(board):
-    return np.array_equal(np.flip(np.cumprod(np.flip(board, 0), axis=0), 0), board) # explanation: in this column-wise cumprod, all elements following a zero (empty space) are turned into zeros, so all spaces above an empty space must also be empty.  If the rest of the observed column does not exhibit this behavior, board is invalid
+	return np.array_equal(np.flip(np.cumprod(np.flip(board, 0), axis=0), 0), board) # explanation: in this column-wise cumprod, all elements following a zero (empty space) are turned into zeros, so all spaces above an empty space must also be empty.  If the rest of the observed column does not exhibit this behavior, board is invalid
 
 """
 AUTHOR: Connor Felton
@@ -254,30 +252,69 @@ def board_is_valid(board, first_player, current_player, turns):
 	else:
 		# Otherwise, both players should have equal pieces.
 		return (playerPieces == aiPieces)
-		
+
+
+def printThinkTimes(playerThinkTimes, AIThinkTimes):
+	'''
+	written by P. Reynolds
+	displays think times of the two players in an easy-to-read table to the console
+	'''
+	print("\nThink Times for Human and AI:")
+	print ("{:<12} | {:<7} | {:<7}".format('Player Name','Avg','Std'))
+	print("------------------------------")
+	print ("{:<12} | {:<7} | {:<7}".format("Human", round(np.average(playerThinkTimes),5), round(np.std(playerThinkTimes),5)))
+	print ("{:<12} | {:<7} | {:<7}".format("AI", round(np.average(AIThinkTimes),5), round(np.std(AIThinkTimes),5)))
+	print("------------------------------\nRaw Times:")
+	print("Player think times:", playerThinkTimes)
+	print('AI think times:', AIThinkTimes)
 		
 
 """
 AUTHOR: Connor Felton, some code borrowed from original pygame implementation.
 This function plays a single game of Connect 4 against the player.
 """
-def play_game(depth):
+def play_game(depth, logThinkTimes=True):
+	import time
 	no_winner = True
 	detect_errors = True # Always True unless the user decides to ignore errors.
-	invalid = False
+	invalidBoard = False
 
 	#Set up the game.
 	turn = random.randint(PLAYER, AI)
-	totalTurns = 0
+	totalMoves = 0
 	first_player = turn
 	board = create_board()
+
+	# lists to log think times
+	if logThinkTimes:
+		playerThinkTimes = []
+		AIThinkTimes = []
+
+	image = takePictureOfBoard()
+	oldBoard = interpretBoard(image)
+	
+	# we know for sure what the camera should be seeing, but just to make sure...
+	if not np.array_equal(oldBoard, np.zeros((COLUMN_COUNT, ROW_COUNT))):
+		print("Camera thinks that opening board is not empty!")
+		return
 
 	#Play until a player wins.
 	while (no_winner):
 		if (turn == PLAYER):
+
 			print("Player's turn. Waiting for player...")
+
+			# store current timestamp in a variable for future reference
+			if (logThinkTimes):
+				playerStartTime = time.time()
+
 			
 			# TODO: Code here that waits until a new piece is detected. Update board state.
+			oldBoard = interpretBoard(takePictureOfBoard())
+			
+			while (np.array_equal(oldBoard, board)): # while the board hasn't changed, wait for player to make his move...
+				board = interpretBoard(takePictureOfBoard())
+
 			
 			# TEMPORARY CODE: The real program should get board state from images, not the keyboard.
 			col = int(input(" > ")) - 1
@@ -287,7 +324,10 @@ def play_game(depth):
 			else:
 				print("Invalid column")
 
-			totalTurns += 1
+			if(logThinkTimes):
+				playerThinkTimes.append(time.time()-playerStartTime)
+
+			totalMoves += 1
 
 			# Make sure the board is valid.
 			'''if (board_is_valid(board, first_player, turn, totalTurns) == False):
@@ -295,9 +335,9 @@ def play_game(depth):
 			else:
 				invalid = False'''
 				
-			invalid = not board_is_valid(board, first_player, turn, totalTurns) # simplified by P. Reynolds from the above if-else implementation
+			invalidBoard = not board_is_valid(board, first_player, turn, totalMoves) # simplified by P. Reynolds from the above if-else structure
 			
-			while (detect_errors and invalid):
+			while (detect_errors and invalidBoard):
 				print_board(board)
 				print("Board invalid. Select an option:\n 1. Read board state again\n 2. Ignore error and try to keep playing\n 3. End game")
 				option = int(input(">>> "))
@@ -305,19 +345,23 @@ def play_game(depth):
 					# TODO: The robot should attempt to read the board again.
 					#       Ideally, it will try several times before asking the user what to do.
 					if (board_is_valid(board, first_player, turn) == False):
-						invalid = True
+						invalidBoard = True
 					else:
-						invalid = False
+						invalidBoard = False
 				elif (option == 2):
-					print("Will attempt to keep playing. Error checking disabled.")
-					detect_errors = False
-				else:
+					print("Will attempt to keep playing.  Error checking is still enabled.")
+					break
+				elif (option==3):
 					print("Game Terminated.")
+					printThinkTimes(playerThinkTimes, AIThinkTimes)
 					return
+				else:
+					print("Invalid menu option.  Please try again.")
 
 			# Check if the player has won.
 			if (winning_move(board, PLAYER_PIECE)):
 				print("Player wins!")
+				printThinkTimes(playerThinkTimes, AIThinkTimes)
 				no_winner = False
 			
 			# Print the board so that the user can make sure the game is working correctly.
@@ -327,11 +371,17 @@ def play_game(depth):
 		else:
 			print("AI's turn.")
 
+			if logThinkTimes:
+				AIStartTime = time.time()
+
 			# Minimax and drop the piece.
 			col, score = minimax(board, depth, -math.inf, math.inf, True)
 			if (is_valid_location(board, col)):
 				row = get_next_open_row(board, col)
 				drop_piece(board, row, col, AI_PIECE)
+
+				if(logThinkTimes):
+					AIThinkTimes.append(time.time()-AIStartTime)
 			else:
 				# I don't know how the AI would ever pick an invalid column, but if it does, ask the user what to do.
 				print("AI chose invalid column. Select an option:\n 1. Pick a column and keep playing.\n 2. Stop playing.")
@@ -345,11 +395,12 @@ def play_game(depth):
 						drop_piece(board, row, col, AI_PIECE)
 						break
 			
-			totalTurns += 1
+			totalMoves += 1
 
 			# Check if the AI has won.
 			if (winning_move(board, AI_PIECE)):
 				print("AI wins!")
+				printThinkTimes(playerThinkTimes, AIThinkTimes)
 				no_winner = False
 
 			# Print the board so that the user can make sure the game is working correctly.
@@ -358,7 +409,7 @@ def play_game(depth):
 			turn = PLAYER
 
 
-print("Connect 4 Robot")
+print("Connect 4 Robot by the GCC Robotics Club !!")
 
 # Continue playing rounds until the user enters 0 for search depth.
 depth = 1
@@ -373,4 +424,4 @@ while (depth > 0):
 	if (depth > 0):
 		play_game(depth)
 
-print("Exiting program.")
+print("Exiting program. Thanks for playing!")

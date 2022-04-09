@@ -115,11 +115,7 @@ def interpretBoard(image, diagnosticPlot=False):
     # pt order is top left, top right, bottom right, bottom left
     pts_src = np.array([topLeftPOI[1], topRightPOI[0], bottomRightPOI[3], bottomLeftPOI[2]], dtype=np.float32)
 
-    # I accidentally inverted the top right ArUco code, so (for now, a quick fix...):
-    pts_src = np.array([topLeftPOI[1], topRightPOI[2], bottomRightPOI[3], bottomLeftPOI[2]], dtype=np.float32)
-
-
-
+   
     width = get_euler_distance(pts_src[0], pts_src[1])
     height = get_euler_distance(pts_src[0], pts_src[3])
 

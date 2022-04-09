@@ -45,15 +45,15 @@ def getPixelBins(imagePixelDim, numTokensOnAxis, holeDiameter, middleGap, extern
     holeDiameter = 25
 
     middleGapsX = 9.7
-    sideGapsX = 13.5
+    sideGapsX = 19.073
 
-    topBottomGapsY = 9
+    topBottomGapsY = 2.20
     middleGapsY = 6.8
 
     '''
     import numpy as np
 
-    totalBoardRealDim = (numTokensOnAxis*holeDiameter) + ((numTokensOnAxis-1)*middleGapsX) + (2*sideGapsX)
+    totalBoardRealDim = (numTokensOnAxis*holeDiameter) + ((numTokensOnAxis-1)*middleGap) + (2*externalGap)
 
     bins = np.ones(numTokensOnAxis) # make array to fill
     bins[0] = externalGap + (holeDiameter/2) # first token

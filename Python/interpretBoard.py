@@ -12,8 +12,8 @@ def interpretBoard(image, useBackupThreshes=False, numThreshRed=0, numThreshYell
     PARAMETERS:
       image : an RGB image of datatype `uint8` with data in the range 0-255
       useBackupThreshes : whether to use backup thresholds for determining piece membership if the camera is having a hard time
-        numThreshRed : (only if useBackupThreshes==True) integer between 1 and 2 (inclusive) to select a pre-loaded alternative threshold for red
-        numThreshYellow : (only if useBackupThreshes==True) integer between 1 and 2 (inclusive) to select a pre-loaded alternative threshold for yellow
+        numThreshRed : (only if useBackupThreshes==True) integer between 0 and 2 (inclusive) to select a pre-loaded alternative threshold for red
+        numThreshYellow : (only if useBackupThreshes==True) integer between 0 and 2 (inclusive) to select a pre-loaded alternative threshold for yellow
       diagnosticPlot (bool) : whether to plot color thresholds and query locations for the board for troubleshooting
     Returns
     -------

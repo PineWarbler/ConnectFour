@@ -215,7 +215,7 @@ Good for making sure there were no issues when translating the picture to a boar
 Returns true if the state is valid, false otherwise.
 Only call if the player or AI has already placed a piece.
 """
-def board_is_valid(board, first_player, current_player, turns):
+def board_is_valid(board, first_player, current_player, numMoves):
 	aiPieces = 0
 	playerPieces = 0
 	bad_if_air = False
@@ -224,9 +224,9 @@ def board_is_valid(board, first_player, current_player, turns):
 	#   then the board is invalid.
 
 	# Count all pieces. Make sure no pieces are floating.
-	for i in range(7): # Every column
+	for i in range(COLUMN_COUNT): # Every column
 		bad_if_air = False
-		for j in range(6): # Each row of the column
+		for j in range(ROW_COUNT): # Each row of the column
 			if (board[j][i]==PLAYER_PIECE):
 				if (bad_if_air):
 					return False
@@ -239,7 +239,7 @@ def board_is_valid(board, first_player, current_player, turns):
 				bad_if_air = True
 
 	# If the total number of pieces is wrong, return false.
-	if (turns != (aiPieces + playerPieces)):
+	if (numMoves != (aiPieces + playerPieces)):
 		return False
 	
 	# Ensure that the number of each piece is valid.
@@ -343,7 +343,24 @@ def play_game(depth, logThinkTimes=True):
 				option = int(input(">>> "))
 				if (option == 1):
 					# TODO: The robot should attempt to read the board again.
+					board=interpretBoard(takePictureOfBoard())
 					#       Ideally, it will try several times before asking the user what to do.
+
+					# these numbers of backup threshes are defined in the `interpretBoard` function and are optional parameters
+					numBackupYellowThreshes=3
+					numBackupRedThreshes=3
+					stopLooping=False
+					# loop through all possible combinations of different thresholds in a desperate attempt to read the board properly
+					for y in range(0, numBackupYellowThreshes):
+						if stopLooping:
+							break
+						for r in range(0, numBackupRedThreshes):
+							print("Trying a new combination of thresholds...")
+							board=interpretBoard(image=takePictureOfBoard(), useBackupThreshes=True, numThreshRed=r, numThreshYellow=y)
+							if board_is_valid(first_player, turn):
+								stopLooping=True
+								break
+
 					if (board_is_valid(board, first_player, turn) == False):
 						invalidBoard = True
 					else:

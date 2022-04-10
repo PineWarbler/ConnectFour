@@ -5,12 +5,15 @@ Created on Sat Apr 09 2022
 @author: REYNOLDSPG21
 """
 
-def interpretBoard(image, diagnosticPlot=False):
+def interpretBoard(image, useBackupThreshes=False, numThreshRed=0, numThreshYellow=0, diagnosticPlot=False):
     '''
     Processes an RGB image of a connect four board surrounded by 4 ArUco fiducial markers and returns an array representation of the piece memberships
 
     PARAMETERS:
       image : an RGB image of datatype `uint8` with data in the range 0-255
+      useBackupThreshes : whether to use backup thresholds for determining piece membership if the camera is having a hard time
+        numThreshRed : (only if useBackupThreshes==True) integer between 1 and 2 (inclusive) to select a pre-loaded alternative threshold for red
+        numThreshYellow : (only if useBackupThreshes==True) integer between 1 and 2 (inclusive) to select a pre-loaded alternative threshold for yellow
       diagnosticPlot (bool) : whether to plot color thresholds and query locations for the board for troubleshooting
     Returns
     -------
@@ -146,20 +149,33 @@ def interpretBoard(image, diagnosticPlot=False):
     sideGapsX = (13.5 + 0.573) + 5
     topBottomGapsY = (9 + 0.204) + -7
 
-
-
-
     # these threshes obtained using PowerToys color picker on example image
     # the tool outputs HSV values (0:360, 0:1, 0:1), but need to convert to:
     # (0:180, 0:255, 0:255) for the cv2.inRange command
 
     formattingArray = np.array([180/360, 255, 255]) # multiply by raw PowerToys color picker HSV values to properly format for cv2.inRange
 
-    redMinBound = np.array([322, 0.34, 0.53]) * formattingArray
-    redMaxBound = np.array([360, 0.99, 0.99]) * formattingArray
+    if (useBackupThreshes==False):
+        redMinBound = np.array([322, 0.34, 0.53]) * formattingArray
+        redMaxBound = np.array([360, 0.99, 0.99]) * formattingArray
 
-    yellowMinBound = np.array([39, 0.17, 0.63]) * formattingArray
-    yellowMaxBound = np.array([54, 0.8, 0.99]) * formattingArray
+        yellowMinBound = np.array([39, 0.17, 0.63]) * formattingArray
+        yellowMaxBound = np.array([54, 0.8, 0.99]) * formattingArray
+
+    else:
+        backupRedMinBounds = np.array([[339, 0.57, 0.70], [350, 0.80, 0.83], [349, 0.82, 0.84]])
+        backupRedMaxBounds = np.array([[353, 0.99, 0.98], [348, 0.97, 0.96], [349, 0.96, 0.97]])
+
+        backupYellowMinBounds=np.array([[39, 0.66, 0.74], [48, 0.74, 0.77], [50, 0.78, 0.81]])
+        backupYellowMaxBounds = np.array([[67, 0.98, 0.98], [67, 0.91, 0.91], [61, 0.91, 0.91]])
+
+        redMinBound = backupRedMinBounds[numThreshRed] * formattingArray
+        redMaxBound = backupRedMaxBounds[numThreshRed] * formattingArray
+
+        yellowMinBound = backupYellowMinBounds[numThreshYellow] * formattingArray
+        yellowMaxBound = backupYellowMaxBounds[numThreshYellow] * formattingArray
+
+
 
 
 

@@ -208,14 +208,23 @@ def pick_best_move(board, piece):
 def get_board_validity(board):
 	return np.array_equal(np.flip(np.cumprod(np.flip(board, 0), axis=0), 0), board) # explanation: in this column-wise cumprod, all elements following a zero (empty space) are turned into zeros, so all spaces above an empty space must also be empty.  If the rest of the observed column does not exhibit this behavior, board is invalid
 
-"""
-AUTHOR: Connor Felton
-This function ensures that the board's current state is valid.
-Good for making sure there were no issues when translating the picture to a board.
-Returns true if the state is valid, false otherwise.
-Only call if the player or AI has already placed a piece.
-"""
+
 def board_is_valid(board, first_player, current_player, numMoves):
+	"""
+	AUTHOR: Connor Felton
+	This function ensures that the board's current state is valid.
+	Good for making sure there were no issues when translating the picture to a board.
+	Returns true if the state is valid, false otherwise.
+	Only call if the player or AI has already placed a piece.
+
+	Parameters:
+		board : a numpy array; right-side up representation of the connect four board
+		first_player: int OR string, but must be of same dtype as `current_player`; player who played the first token of the game
+		current_player: int OR string, but must be of same dtype as `first_player`; player whose turn it is now
+		numMoves: number of turns taken
+	Returns:
+		boolean value whether the board is valid
+	"""
 	aiPieces = 0
 	playerPieces = 0
 	bad_if_air = False
@@ -382,8 +391,8 @@ def play_game(depth, logThinkTimes=True):
 				no_winner = False
 			
 			# Print the board so that the user can make sure the game is working correctly.
-			# Pass the turn to the AI.
 			print_board(board)
+			# Pass the turn to the AI.
 			turn = AI
 		else:
 			print("AI's turn.")
@@ -391,7 +400,8 @@ def play_game(depth, logThinkTimes=True):
 			if logThinkTimes:
 				AIStartTime = time.time()
 
-			# Minimax and drop the piece.
+			# Minimax and drop the piece, making sure to pass in upside-down board!
+			board = np.flip(board, 0)
 			col, score = minimax(board, depth, -math.inf, math.inf, True)
 			if (is_valid_location(board, col)):
 				row = get_next_open_row(board, col)
@@ -406,12 +416,16 @@ def play_game(depth, logThinkTimes=True):
 					# Quit the game.
 					return
 				# Find a valid column to drop a piece so as to prevent future errors.
-				for i in range(7):
+				for i in range(COLUMN_COUNT):
 					if (is_valid_location(board, col)):
 						row = get_next_open_row(board, col)
 						drop_piece(board, row, col, AI_PIECE)
 						break
 			
+			# without the gantry up and running to drop a piece on its own, we'll need to drop the piece in for the robot
+			print("AI would like a piece dropped in column number (remember zero-based indexing!)", col, "\n	press Enter when you've dropped the piece.")
+			input() # wait for user to press Enter
+
 			totalMoves += 1
 
 			# Check if the AI has won.
@@ -422,7 +436,7 @@ def play_game(depth, logThinkTimes=True):
 
 			# Print the board so that the user can make sure the game is working correctly.
 			# Pass the turn to the player.
-			print_board(board)
+			print_board(np.flip(board, 0)) # unflip the board after passing it to the minimax earlier...
 			turn = PLAYER
 
 

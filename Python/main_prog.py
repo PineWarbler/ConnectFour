@@ -303,11 +303,10 @@ def play_game(depth, logThinkTimes=True):
 		playerThinkTimes = []
 		AIThinkTimes = []
 
-	image = takePictureOfBoard()
-	oldBoard = interpretBoard(image)
+	board=interpretBoard(takePictureOfBoard())
 	
 	# we know for sure what the camera should be seeing, but just to make sure...
-	if not np.array_equal(oldBoard, np.zeros((COLUMN_COUNT, ROW_COUNT))):
+	if not np.array_equal(oldBoard, np.zeros((ROW_COUNT, COLUMN_COUNT))):
 		userInput = input("Camera thinks that opening board is not empty! Press 1 to continue or 0 to quit:\n>>> ")
 		if(int(userInput) == 0):
 			return
@@ -340,8 +339,10 @@ def play_game(depth, logThinkTimes=True):
 			# 	drop_piece(board, row, col, PLAYER_PIECE)
 			# else:
 			# 	print("Invalid column")
+
+			print("Press Enter when the player has dropped in the piece.")
 			input()
-			print("Press Enter to when the player has dropped in the piece.")
+			
 
 			if(logThinkTimes):
 				playerThinkTimes.append(time.time()-playerStartTime)
@@ -353,7 +354,8 @@ def play_game(depth, logThinkTimes=True):
 				invalid = True
 			else:
 				invalid = False'''
-				
+			
+			board=interpretBoard(takePictureOfBoard()) # read in board again once piece is deposited to check for win
 			invalidBoard = not board_is_valid(np.flip(board, 0), first_player, turn, totalMoves) # simplified by P. Reynolds from the above if-else structure
 			
 			while (detect_errors and invalidBoard):
@@ -363,28 +365,35 @@ def play_game(depth, logThinkTimes=True):
 				option = int(input(">>> "))
 				if (option == 1):
 					# TODO: The robot should attempt to read the board again.
+
+					print("Trying again using default color thresholds...", end="")
 					board=interpretBoard(takePictureOfBoard())
-					#       Ideally, it will try several times before asking the user what to do.
-
-					# these numbers of backup threshes are defined in the `interpretBoard` function and are optional parameters
-					numBackupYellowThreshes=3
-					numBackupRedThreshes=3
-					stopLooping=False
-					# loop through all possible combinations of different thresholds in a desperate attempt to read the board properly
-					for y in range(0, numBackupYellowThreshes):
-						if stopLooping:
-							break
-						for r in range(0, numBackupRedThreshes):
-							print("Trying a new combination of thresholds...")
-							board=interpretBoard(image=takePictureOfBoard(), useBackupThreshes=True, numThreshRed=r, numThreshYellow=y)
-							if board_is_valid(board, first_player, turn, totalMoves):
-								stopLooping=True
-								break
-
-					if (board_is_valid(np.flip(board, 0), first_player, turn, totalMoves) == False):
-						invalidBoard = True
+					if board_is_valid(np.flip(board, 0), first_player, turn, totalMoves):
+						print("Seems valid:\n", board)
+						invalidBoard=False # exit while loop
 					else:
-						invalidBoard = False
+						print("Failed.")
+						# these numbers of backup threshes are defined in the `interpretBoard` function and are optional parameters
+						numBackupYellowThreshes=3
+						numBackupRedThreshes=3
+						stopLooping=False
+						# loop through all possible combinations of different thresholds in a desperate attempt to read the board properly
+						for y in range(0, numBackupYellowThreshes):
+							if stopLooping:
+								break
+							for r in range(0, numBackupRedThreshes):
+								print("Trying a new combination of thresholds...")
+								board=interpretBoard(image=takePictureOfBoard(), useBackupThreshes=True, numThreshRed=r, numThreshYellow=y)
+								if board_is_valid(np.flip(board, 0), first_player, turn, totalMoves):
+									stopLooping=True # break out of for loop
+									invalidBoard=False # break out of while loop
+									break
+
+						# if (board_is_valid(np.flip(board, 0), first_player, turn, totalMoves) == False): # what?! this logic doesn't make sense that invalidBoard set to true
+						# 	invalidBoard = True
+						# else:
+						# 	invalidBoard = False
+						invalidBoard = not board_is_valid(np.flip(board, 0), first_player, turn, totalMoves) # simplified by P. Reynolds from the above if-else structure
 				elif (option == 2):
 					print("Will attempt to keep playing.  Error checking is still enabled.")
 					break
@@ -395,14 +404,15 @@ def play_game(depth, logThinkTimes=True):
 				else:
 					print("Invalid menu option.  Please try again.")
 
+			
 			# Check if the player has won.
-			if (winning_move(board, PLAYER_PIECE)):
+			if (winning_move(board, PLAYER_PIECE)): # this `winning_move` function is insensitive to whether the board is flipped or not.
 				print("Player wins!")
 				printThinkTimes(playerThinkTimes, AIThinkTimes)
 				no_winner = False
 			
 			# Print the board so that the user can make sure the game is working correctly.
-			print_board(board)
+			print(board)
 			# Pass the turn to the AI.
 			turn = AI
 		else:
@@ -439,16 +449,18 @@ def play_game(depth, logThinkTimes=True):
 
 			totalMoves += 1
 
+
+			board=interpretBoard(takePictureOfBoard()) # read in board again once piece is deposited to check for win
+			print(board)
 			# Check if the AI has won.
-			if (winning_move(board, AI_PIECE)):
+			if (winning_move(board, AI_PIECE)): # this `winning_move` function is insensitive to whether the board is flipped or not.
 				print("AI wins!")
 				printThinkTimes(playerThinkTimes, AIThinkTimes)
 				no_winner = False
 
-			# Print the board so that the user can make sure the game is working correctly.
+			# make sure board is valid (whether to continue `while` loop)
+			invalidBoard = not board_is_valid(np.flip(board, 0), first_player, turn, totalMoves) # simplified by P. Reynolds from the above if-else structure
 			# Pass the turn to the player.
-			board = interpretBoard(takePictureOfBoard())
-			print_board(board) # unflip the board after passing it to the minimax earlier...
 			turn = PLAYER
 
 

@@ -180,7 +180,7 @@ def interpretBoard(image, useBackupThreshes=False, numThreshRed=0, numThreshYell
 
 
     ## convert to hsv
-    hsv = cv2.cvtColor(unwarped_image, cv2.COLOR_BGR2HSV)
+    hsv = cv2.cvtColor(unwarped_image, cv2.COLOR_RGB2HSV)
 
     if diagnosticPlot==True:
         fig, ax = plt.subplots(nrows=numRows, ncols=numCols)

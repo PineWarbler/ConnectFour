@@ -304,8 +304,11 @@ def play_game(depth, logThinkTimes=True):
 	
 	# we know for sure what the camera should be seeing, but just to make sure...
 	if not np.array_equal(oldBoard, np.zeros((COLUMN_COUNT, ROW_COUNT))):
-		print("Camera thinks that opening board is not empty!")
-		return
+		userInput = input("Camera thinks that opening board is not empty! Press Enter to continue or 0 to quit:\n>>> ")
+		if(int(userInput) == 0):
+			return
+		else:
+			print("Continuing...")
 
 	#Play until a player wins.
 	while (no_winner):
@@ -436,7 +439,8 @@ def play_game(depth, logThinkTimes=True):
 
 			# Print the board so that the user can make sure the game is working correctly.
 			# Pass the turn to the player.
-			print_board(np.flip(board, 0)) # unflip the board after passing it to the minimax earlier...
+			board = interpretBoard(takePictureOfBoard)
+			print_board(board) # unflip the board after passing it to the minimax earlier...
 			turn = PLAYER
 
 

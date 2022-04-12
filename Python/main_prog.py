@@ -369,11 +369,11 @@ def play_game(depth, logThinkTimes=True):
 						for r in range(0, numBackupRedThreshes):
 							print("Trying a new combination of thresholds...")
 							board=interpretBoard(image=takePictureOfBoard(), useBackupThreshes=True, numThreshRed=r, numThreshYellow=y)
-							if board_is_valid(first_player, turn):
+							if board_is_valid(board, first_player, turn, totalMoves):
 								stopLooping=True
 								break
 
-					if (board_is_valid(board, first_player, turn) == False):
+					if (board_is_valid(board, first_player, turn, totalMoves) == False):
 						invalidBoard = True
 					else:
 						invalidBoard = False

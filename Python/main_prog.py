@@ -32,6 +32,8 @@ EMPTY = 0
 PLAYER_PIECE = 1
 AI_PIECE = 2
 
+print("Player pieces are yellow; AI pieces are red")
+
 # SEARCH_DEPTH = 5
 
 WINDOW_LENGTH = 4 # this is number of consecutive tokens needed to win
@@ -218,7 +220,7 @@ def board_is_valid(board, first_player, current_player, numMoves):
 	Only call if the player or AI has already placed a piece.
 
 	Parameters:
-		board : a numpy array; right-side up representation of the connect four board
+		board : a numpy array; flipped representation of the connect four board
 		first_player: int OR string, but must be of same dtype as `current_player`; player who played the first token of the game
 		current_player: int OR string, but must be of same dtype as `first_player`; player whose turn it is now
 		numMoves: number of turns taken
@@ -315,9 +317,10 @@ def play_game(depth, logThinkTimes=True):
 	#Play until a player wins.
 	while (no_winner):
 		if (turn == PLAYER):
-
+			
 			print("Player's turn. Waiting for player...")
 
+			print("board at beginning of player's turn is ", board)
 			# store current timestamp in a variable for future reference
 			if (logThinkTimes):
 				playerStartTime = time.time()
@@ -337,7 +340,8 @@ def play_game(depth, logThinkTimes=True):
 			# 	drop_piece(board, row, col, PLAYER_PIECE)
 			# else:
 			# 	print("Invalid column")
-			input("Press Enter to continue.")
+			input()
+			print("Press Enter to when the player has dropped in the piece.")
 
 			if(logThinkTimes):
 				playerThinkTimes.append(time.time()-playerStartTime)
@@ -350,7 +354,7 @@ def play_game(depth, logThinkTimes=True):
 			else:
 				invalid = False'''
 				
-			invalidBoard = not board_is_valid(board, first_player, turn, totalMoves) # simplified by P. Reynolds from the above if-else structure
+			invalidBoard = not board_is_valid(np.flip(board, 0), first_player, turn, totalMoves) # simplified by P. Reynolds from the above if-else structure
 			
 			while (detect_errors and invalidBoard):
 				# print_board(board)
@@ -377,7 +381,7 @@ def play_game(depth, logThinkTimes=True):
 								stopLooping=True
 								break
 
-					if (board_is_valid(board, first_player, turn, totalMoves) == False):
+					if (board_is_valid(np.flip(board, 0), first_player, turn, totalMoves) == False):
 						invalidBoard = True
 					else:
 						invalidBoard = False
@@ -403,8 +407,7 @@ def play_game(depth, logThinkTimes=True):
 			turn = AI
 		else:
 			print("AI's turn.")
-			print("at beginning of AI turn, camera thinks board looks like: ", board)
-
+			print("board at beginning of AI's turn is", board)
 			if logThinkTimes:
 				AIStartTime = time.time()
 
@@ -445,8 +448,7 @@ def play_game(depth, logThinkTimes=True):
 			# Print the board so that the user can make sure the game is working correctly.
 			# Pass the turn to the player.
 			board = interpretBoard(takePictureOfBoard())
-			print(board)
-			# print_board(board) # unflip the board after passing it to the minimax earlier...
+			print_board(board) # unflip the board after passing it to the minimax earlier...
 			turn = PLAYER
 
 

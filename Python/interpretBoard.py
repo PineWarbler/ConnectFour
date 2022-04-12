@@ -66,8 +66,11 @@ def interpretBoard(image, useBackupThreshes=False, numThreshRed=0, numThreshYell
     boardLinersArucoDict = cv2.aruco.Dictionary_get(ARUCO_DICT["DICT_5X5_100"])
 
     arucoParams = cv2.aruco.DetectorParameters_create()
-
-    (corners, ids, rejected) = cv2.aruco.detectMarkers(image, boardLinersArucoDict, parameters=arucoParams)
+    
+    bgrImage = formatImage(image, mode="uint8")
+    bgrImage = cv2.cvtColor(bgrImage, cv2.COLOR_RGB2BGR)
+    
+    (corners, ids, rejected) = cv2.aruco.detectMarkers(bgrImage, boardLinersArucoDict, parameters=arucoParams)
 
     corners = np.array(corners) # turn into numpy array
 

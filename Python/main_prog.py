@@ -453,6 +453,7 @@ depth = 1
 while (depth > 0):
 	# Get search depth
 	# It is not recommended to use a search depth greater than 5.
+	print("---- NEW GAME ----")
 	print("\nEnter search depth.\n >= 1: AI difficulty. Higher is harder.\n 0: Quit.")
 	depth = input(">>> ")
 	depth = int(depth)

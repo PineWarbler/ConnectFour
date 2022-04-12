@@ -439,7 +439,7 @@ def play_game(depth, logThinkTimes=True):
 
 			# Print the board so that the user can make sure the game is working correctly.
 			# Pass the turn to the player.
-			board = interpretBoard(takePictureOfBoard)
+			board = interpretBoard(takePictureOfBoard())
 			print_board(board) # unflip the board after passing it to the minimax earlier...
 			turn = PLAYER
 

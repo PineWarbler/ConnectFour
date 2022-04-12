@@ -292,7 +292,9 @@ def play_game(depth, logThinkTimes=True):
 	turn = random.randint(PLAYER, AI)
 	totalMoves = 0
 	first_player = turn
+	
 	board = create_board()
+	# board = interpretBoard(takePictureOfBoard())
 
 	# lists to log think times
 	if logThinkTimes:

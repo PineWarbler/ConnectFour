@@ -331,12 +331,13 @@ def play_game(depth, logThinkTimes=True):
 
 			
 			# TEMPORARY CODE: The real program should get board state from images, not the keyboard.
-			col = int(input(" > ")) - 1
-			if (is_valid_location(board, col)):
-				row = get_next_open_row(board, col)
-				drop_piece(board, row, col, PLAYER_PIECE)
-			else:
-				print("Invalid column")
+			# col = int(input(" > ")) - 1
+			# if (is_valid_location(board, col)):
+			# 	row = get_next_open_row(board, col)
+			# 	drop_piece(board, row, col, PLAYER_PIECE)
+			# else:
+			# 	print("Invalid column")
+			input("Press Enter to continue.")
 
 			if(logThinkTimes):
 				playerThinkTimes.append(time.time()-playerStartTime)
@@ -352,7 +353,8 @@ def play_game(depth, logThinkTimes=True):
 			invalidBoard = not board_is_valid(board, first_player, turn, totalMoves) # simplified by P. Reynolds from the above if-else structure
 			
 			while (detect_errors and invalidBoard):
-				print_board(board)
+				# print_board(board)
+				print(board)
 				print("Board invalid. Select an option:\n 1. Read board state again\n 2. Ignore error and try to keep playing\n 3. End game")
 				option = int(input(">>> "))
 				if (option == 1):
@@ -401,6 +403,7 @@ def play_game(depth, logThinkTimes=True):
 			turn = AI
 		else:
 			print("AI's turn.")
+			print("at beginning of AI turn, camera thinks board looks like: ", board)
 
 			if logThinkTimes:
 				AIStartTime = time.time()
@@ -442,7 +445,8 @@ def play_game(depth, logThinkTimes=True):
 			# Print the board so that the user can make sure the game is working correctly.
 			# Pass the turn to the player.
 			board = interpretBoard(takePictureOfBoard())
-			print_board(board) # unflip the board after passing it to the minimax earlier...
+			print(board)
+			# print_board(board) # unflip the board after passing it to the minimax earlier...
 			turn = PLAYER
 
 

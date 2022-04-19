@@ -17,7 +17,7 @@ def interpretBoard(image, useBackupThreshes=False, numThreshRed=0, numThreshYell
       diagnosticPlot (bool) : whether to plot color thresholds and query locations for the board for troubleshooting
     Returns
     -------
-    board : a numpy array of the interpreted board (right side up)
+    board : a numpy array of the interpreted board (right side up); all values are uint8 datatypes
     if some of the four ArUco fiducial markers are not found in the image, function will return None
     '''
 

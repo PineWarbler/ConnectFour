@@ -306,7 +306,7 @@ def play_game(depth, logThinkTimes=True):
 	board=interpretBoard(takePictureOfBoard())
 	
 	# we know for sure what the camera should be seeing, but just to make sure...
-	if not np.array_equal(oldBoard, np.zeros((ROW_COUNT, COLUMN_COUNT))):
+	if not np.array_equal(board, np.zeros((ROW_COUNT, COLUMN_COUNT), np.uint8)): # making sure to convert to uint8 datatype because array_equal is datatype sensitive!
 		userInput = input("Camera thinks that opening board is not empty! Press 1 to continue or 0 to quit:\n>>> ")
 		if(int(userInput) == 0):
 			return
@@ -328,9 +328,10 @@ def play_game(depth, logThinkTimes=True):
 			# TODO: Code here that waits until a new piece is detected. Update board state.
 			oldBoard = interpretBoard(takePictureOfBoard())
 			
-			while (np.array_equal(oldBoard, board)): # while the board hasn't changed, wait for player to make his move...
-				board = interpretBoard(takePictureOfBoard())
-
+			if oldBoard == None: # if `interpretBoard` returns None, then some/all of the four boundary codes were not found in frame
+				print("Camera can't see some/all the four boundary codes in frame.  Please re-adjust the camera and/or board.\nWaiting until problem is fixed...")
+				while oldBoard == None: 
+					oldBoard = interpretBoard(takePictureOfBoard())
 			
 			# TEMPORARY CODE: The real program should get board state from images, not the keyboard.
 			# col = int(input(" > ")) - 1
@@ -339,7 +340,12 @@ def play_game(depth, logThinkTimes=True):
 			# 	drop_piece(board, row, col, PLAYER_PIECE)
 			# else:
 			# 	print("Invalid column")
+			
+			# we ultimately want the robot to determine when the turn switches by itself like this:
+			while (np.array_equal(oldBoard, board)): # while the board hasn't changed, wait for player to make his move...
+				board = interpretBoard(takePictureOfBoard())
 
+			# for now, though, we implement an operator-override to make indicate turn switch
 			print("Press Enter when the player has dropped in the piece.")
 			input()
 			

@@ -5,10 +5,16 @@
 - to create a robot that plays Connect Four at a high skill level against a human opponent.  
 - Ideally is able to reliably beat its human opponents with minimal algorithm compute time (less than 10s per turn decision).
 
+## Milestones
+- 4/19/2022: Our robot beat a human player for the first time! (running search depth 4)!
+
 ## ToDo
+- [ ] revise and print piece dispenser design to have a smaller column
+- [ ] solve problem of ridged token edges that prevent clean dispensing
 - [ ] Get H-bridge stepper motor circuit running with Python code
 - [x] finalize and 3d print column-style piece dispenser
 - [ ] 3d print and assemble gantry
+- [ ] wire routing
 - [x] Develop code localization and piece color classification method
     - Done.  See [interpretBoard.py](/Python/interpretBoard.py), which uses HSV color thresholding and board localization using 4 ArUco markers on board edges
 - [x] Get RPi camera running

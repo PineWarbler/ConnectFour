@@ -32,6 +32,8 @@ EMPTY = 0
 PLAYER_PIECE = 1
 AI_PIECE = 2
 
+numReReads = 3 # number of times to re-read board state using default thresholds in the event of an invalid board before attempting more drastic re-read options
+
 print("Player pieces are yellow; AI pieces are red")
 
 # SEARCH_DEPTH = 5
@@ -319,7 +321,7 @@ def play_game(depth, logThinkTimes=True):
 			
 			print("Player's turn. Waiting for player...")
 
-			print("board at beginning of player's turn is ", board)
+			print("board at beginning of player's turn is \n", board)
 			# store current timestamp in a variable for future reference
 			if (logThinkTimes):
 				playerStartTime = time.time()
@@ -363,9 +365,18 @@ def play_game(depth, logThinkTimes=True):
 			
 			board=interpretBoard(takePictureOfBoard()) # read in board again once piece is deposited to check for win
 			invalidBoard = not board_is_valid(np.flip(board, 0), first_player, turn, totalMoves) # simplified by P. Reynolds from the above if-else structure
+
+			# read the board again using default thresholds
+			if (detect_errors and invalidBoard):
+				print("Board invalid.  Attempting to reread the board state another", numReReads, "times using default color thresholds.")
+				for i in range(0, numReReads):
+					board=interpretBoard(takePictureOfBoard())
+					if board_is_valid(np.flip(board, 0), first_player, turn, totalMoves):
+						print("Seems valid:\n", board)
+						break # exit for loop
 			
 			while (detect_errors and invalidBoard):
-				# print_board(board)
+				# then we've already tried to read the board using default thresholds, so prompt user to see what to do.
 				print(board)
 				print("Board invalid. Select an option:\n 1. Read board state again\n 2. Ignore error and try to keep playing\n 3. End game")
 				option = int(input(">>> "))

@@ -6,7 +6,7 @@
 - Ideally is able to reliably beat its human opponents with minimal algorithm compute time (less than 10s per turn decision).
 
 ## Milestones
-- 4/19/2022: Our robot beat a human player for the first time! (running search depth 4)!
+- 4/19/2022: Our robot beat a human player for the first time (running search depth 4)!
 
 ## ToDo
 - [ ] revise and print piece dispenser design to have a smaller column

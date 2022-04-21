@@ -344,11 +344,13 @@ def play_game(depth, logThinkTimes=True):
 			# 	print("Invalid column")
 			
 			# we ultimately want the robot to determine when the turn switches by itself like this:
-			while (np.array_equal(oldBoard, board)): # while the board hasn't changed, wait for player to make his move...
+			# originally: while not (not np.array_equal(oldBoard, board) and board_is_valid(np.flip(board, 0), first_player, turn, totalMoves)):
+			# but simplified using De Morgan's Law to:
+			while (np.array_equal(oldBoard, board) or not board_is_valid(np.flip(board, 0), first_player, turn, totalMoves)): # while the board hasn't changed or the board is invalid, wait for player to make his move...
 				board = interpretBoard(takePictureOfBoard())
 
-			# for now, though, we implement an operator-override to make indicate turn switch
-			print("Press Enter when the player has dropped in the piece.")
+			# for now, though, we implement an operator-override to confirm turn switch
+			print("Computer thinks that the turn has switched. Press Enter to confirm.")
 			input()
 			
 
@@ -366,15 +368,17 @@ def play_game(depth, logThinkTimes=True):
 			board=interpretBoard(takePictureOfBoard()) # read in board again once piece is deposited to check for win
 			invalidBoard = not board_is_valid(np.flip(board, 0), first_player, turn, totalMoves) # simplified by P. Reynolds from the above if-else structure
 
-			# read the board again using default thresholds
+			# read the board again using default thresholds as a first intervention
 			if (detect_errors and invalidBoard):
 				print("Board invalid.  Attempting to reread the board state another", numReReads, "times using default color thresholds.")
 				for i in range(0, numReReads):
 					board=interpretBoard(takePictureOfBoard())
 					if board_is_valid(np.flip(board, 0), first_player, turn, totalMoves):
 						print("Seems valid:\n", board)
+						invalidBoard=False # because we've read the board properly
 						break # exit for loop
 			
+			# if default thresholds failed (board is still invalid), then let's decide what to do...
 			while (detect_errors and invalidBoard):
 				# then we've already tried to read the board using default thresholds, so prompt user to see what to do.
 				print(board)

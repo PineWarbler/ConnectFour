@@ -504,8 +504,10 @@ def play_game(depth, logThinkTimes=True, displayDashboard = True):
             turn = PLAYER
 
             if displayDashboard:
+                print("Updating data dashboard...", end="")
                 minimaxScores.append(score)
-                update_dashboard(col, recursionCount, depth, playerThinkTimes,AIThinkTimes,minimaxScores,board)
+                update_dashboard(col, recursionCount, depth, playerThinkTimes, AIThinkTimes, minimaxScores, takePictureOfBoard())
+                print("Done")
 
 print("Connect 4 Robot by the GCC Robotics Club !!")
 

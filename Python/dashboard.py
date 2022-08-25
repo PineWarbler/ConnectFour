@@ -17,7 +17,8 @@ Created on Mon Jul 18 14:28:50 2022
 from pyqtgraph.Qt import QtGui, QtCore
 import numpy as np
 import pyqtgraph as pg
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+import cv2
 import time
 
 col_choice = 5
@@ -25,9 +26,30 @@ col_choice = 5
 pg.setConfigOptions(imageAxisOrder='row-major')
 
 #QtGui.QApplication.setGraphicsSystem('raster')
-app = QtGui.QApplication([])
+
+# loosely based on https://stackoverflow.com/a/63708668
+# if not QtGui.QApplication.instance():
+    # app = QtGui.QApplication(sys.argv)
+    # app = QtGui.QApplication([])
+    # del app # https://stackoverflow.com/a/6778997
+# else:
+    # app = QtWidgets.QApplication.instance()
+    # app = QtGui.QApplication([])
 #mw = QtGui.QMainWindow()
 #mw.resize(800,800)
+
+#app = QApplication.instance()
+#if app is None: 
+#    app = QApplication(sys.argv)
+
+#try:
+#    del app # try to delete any open window instance
+#except:
+#    app = QtGui.QApplication([]) # if there is no other window instance, make a new one
+
+app = QtGui.QApplication.instance()
+if app == None:
+  app = QtGui.QApplication([])
 
 win = pg.GraphicsLayoutWidget(show=True, title="Connect Four Dashboard")
 win.resize(1920,1080)
@@ -49,7 +71,8 @@ win.nextRow()
 
 
 
-board_row = plt.imread("C:/Users/pgr/Downloads/board_row_green.JPG")
+board_row = cv2.imread("board_row_green.JPG")
+board_row = cv2.cvtColor(board_row, cv2.COLOR_BGR2RGB) # convert default BGR to RGB
 board_height, board_width = board_row.shape[0:2] # slicing to omit channel (unnecessary)
 
 # board_row = np.rot90(board_row, k=3)
@@ -103,11 +126,11 @@ minimaxScoresPlot.setLabel('left', "score")
 minimaxScoresPlot.setLabel('bottom', "turn #")
 minimaxScoresPlot.setMaximumHeight(lowestRowMaxHeight)
 
-threshedImagePlot = win.addPlot(title="Thresholded Image")
+threshedImagePlot = win.addPlot(title="Input Image")
 # image = plt.imread("D:/Connect4Board.jpg")
 image = np.eye(200)
-imgItem = pg.ImageItem(image = np.rot90(image)) # the slicing is to rotate by 90 degrees
-threshedImagePlot.addItem(imgItem, title="Simplest possible image example") 
+imgItem = pg.ImageItem(image = image) # the slicing is to rotate by 90 degrees np.rot90(image)
+threshedImagePlot.addItem(imgItem) 
 threshedImagePlot.showAxis('bottom', False) # don't show axes
 threshedImagePlot.showAxis('left', False)
 threshedImagePlot.setAspectLocked(True)
@@ -146,7 +169,7 @@ def update_dashboard(col_choice, recursionCount, depth, playerThinkTimes, AIThin
     minimaxScoresPlot.plot(minimaxScores, pen=pg.mkPen(color="c", width=5))
     
     # display threshed image
-    imgItem = pg.ImageItem(image = threshedImage)
+    imgItem = pg.ImageItem(image = cv2.rotate(threshedImage, cv2.ROTATE_180))
     threshedImagePlot.addItem(imgItem) 
     
     app.processEvents()

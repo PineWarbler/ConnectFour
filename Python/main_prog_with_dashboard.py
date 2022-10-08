@@ -500,7 +500,7 @@ def play_game(depth, logThinkTimes=True, displayDashboard = True):
 			if displayDashboard:
 				print("Updating data dashboard...", end="")
 				minimaxScores.append(score)
-				update_dashboard(col, recursionCount, depth, playerThinkTimes, AIThinkTimes, minimaxScores, takePictureOfBoard())
+				update_dashboard(6-col, recursionCount, depth, playerThinkTimes, AIThinkTimes, minimaxScores, takePictureOfBoard())
 				print("Done")
 			
 			# without the gantry up and running to drop a piece on its own, we'll need to drop the piece in for the robot
